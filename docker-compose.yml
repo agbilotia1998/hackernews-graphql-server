@@ -9,9 +9,10 @@ services:
       PRISMA_CONFIG: |
         port: 4466
         databases:
-          prismaDB:
+          default:
             connector: postgres
             host: postgres
+            database: prismadb
             port: 5432
             user: prisma
             password: prisma
