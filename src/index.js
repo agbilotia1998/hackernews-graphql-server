@@ -1,5 +1,11 @@
 const { GraphQLServer } = require('graphql-yoga');
 const { prisma } = require('./generated/prisma-client');
+const Query = require('./resolvers/Query');
+const Mutation = require('./resolvers/Mutation');
+const Subscription = require('./resolvers/Subscription');
+const User = require('./resolvers/User');
+const Link = require('./resolvers/Link');
+const Vote = require('./resolvers/Vote');
 
 // let links = [{
 //   id: 'link-0',
@@ -86,95 +92,24 @@ const { prisma } = require('./generated/prisma-client');
 // };
 
 const resolvers = {
-  Query: {
-    info: () => `This is the API of a Hackernews Clone`,
-    feed: (root, args, context, info) => {
-      return context.prisma.links()
-    },
-    fetchLink: (root, args, context) => {
-      // let result = null;
-      //
-      // links.forEach((link) => {
-      //   if(link.id === args.id){
-      //     result = link;
-      //   }
-      // });
-      //
-      // if(!result) {
-      //   console.log('No link with matching ID found');
-      // } else {
-      //   return result;
-      // }
-      return context.prisma.link({
-        id: args.id
-      })
-    }
-  },
-
-  Mutation: {
-    postLink: (root, args, context) => {
-      return context.prisma.createLink({
-        url: args.url,
-        description: args.description,
-      })
-    },
-
-    updateLink: (root, args, context) => {
-      // let result = null;
-
-      // links.forEach((link) => {
-      //   if(link.id === args.id){
-      //     link.description = args.description;
-      //     link.url = args.url;
-      //     result = link;
-      //   }
-      // });
-      //
-      // if(!result) {
-      //   console.log('No link with matching ID found');
-      // } else {
-      //   return result;
-      // }
-
-      return context.prisma.updateLink({
-        data: {
-          description: args.description,
-          url: args.url
-        },
-        where: {
-          id: args.id
-        }
-      })
-    },
-
-    deleteLink: (root, args, context) => {
-      // let result = null;
-      //
-      // links.forEach((link) => {
-      //   if(link.id === args.id){
-      //     const index = links.indexOf(link);
-      //     links.splice(index);
-      //     result = link;
-      //   }
-      // });
-      //
-      // if(!result) {
-      //   console.log('No link with matching ID found');
-      // } else {
-      //   return result;
-      // }
-      return context.prisma.deleteLink({
-        id: args.id
-      })
-    }
-  }
+  Query,
+  Mutation,
+  Subscription,
+  User,
+  Link,
+  Vote
 };
 
 
 const server = new GraphQLServer({
   typeDefs: './src/schema.graphql',
-  resolvers,
-  context: { prisma }
+  resolvers: resolvers,
+  context: request => {
+    return {
+      ...request,
+      prisma
+    }
+  }
 });
 
 server.start(() => {
