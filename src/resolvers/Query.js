@@ -27,6 +27,24 @@ async function feed (root, args, context, info) {
   return links;
 }
 
+async function links(root, args, context, info) {
+  const where = args.filter ? {
+    OR: [
+      { description_contains: args.filter },
+      { url_contains: args.filter }
+    ]
+  } : {};
+
+  const allLinks = await context.prisma.links({
+    where,
+    skip: args.skip,
+    first: args.first,
+    orderBy: args.orderBy
+  });
+
+  return allLinks;
+}
+
 function fetchLink (root, args, context) {
   // let result = null;
   //
@@ -49,5 +67,6 @@ function fetchLink (root, args, context) {
 module.exports = {
   info: info,
   feed: feed,
-  fetchLink: fetchLink
+  fetchLink: fetchLink,
+  links: links
 };
